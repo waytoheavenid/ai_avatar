@@ -1,141 +1,74 @@
-<!DOCTYPE html> 
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Avatar Demo – Jogja Gallery 25–30 Agustus 2025</title>
-  <meta name="color-scheme" content="dark">
+<script>
+!function(window){
+  const host="https://labs.heygen.com",
+        url=host+"/guest/streaming-embed?",
+        clientWidth=document.body.clientWidth,
+        wrapDiv=document.createElement("div");
+  wrapDiv.id="heygen-streaming-embed";
 
-  <style>
-    :root {
-      color-scheme: dark;
-    }
+  const container=document.createElement("div");
+  container.id="heygen-streaming-container";
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #0b0b0f;
-      color: #e6e6f0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-      overflow: hidden;
-    }
+  const stylesheet=document.createElement("style");
+  stylesheet.innerHTML=`
+  #heygen-streaming-embed {
+    z-index: 9999;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
+    transition: all linear 0.1s;
+    overflow: hidden;
 
-    #hint {
-      position: fixed;
-      left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
-      padding: 10px 14px;
-      font-size: 12px;
-      background: rgba(255,255,255,0.08);
-      color: #e6e6f0;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
-      opacity: .92;
-      z-index: 10000;
-      pointer-events: none;
-      transition: opacity .4s ease;
-    }
+    opacity: 0;
+    visibility: hidden;
+  }
+  #heygen-streaming-embed.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  #heygen-streaming-embed.expand {
+    ${clientWidth<540
+      ? "height: 266px; width: 96%; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+      : "height: 366px; width: calc(366px * 16 / 9); top: 50%; left: 50%; transform: translate(-50%, -50%);"}
+    border: 0;
+    border-radius: 8px;
+  }
+  #heygen-streaming-container {
+    width: 100%;
+    height: 100%;
+  }
+  #heygen-streaming-container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  `;
 
-    @media (max-width: 540px) {
-      html, body {
-        overflow: auto;
-        height: auto;
-      }
+  const iframe=document.createElement("iframe");
+  iframe.allowFullscreen=!1,
+  iframe.title="Streaming Embed",
+  iframe.role="dialog",
+  iframe.allow="microphone",
+  iframe.src=url;
 
-      #hint {
-        font-size: 11px;
-        bottom: 10px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div id="hint">Double-click untuk fullscreen • Tekan <kbd>F</kbd> untuk toggle • <kbd>Esc</kbd> keluar</div>
+  let visible=!1,initial=!1;
+  window.addEventListener("message",(e=>{
+    e.origin===host&&e.data&&e.data.type&&"streaming-embed"===e.data.type&&(
+      "init"===e.data.action?(initial=!0,wrapDiv.classList.toggle("show",initial)):
+      "show"===e.data.action?(visible=!0,wrapDiv.classList.toggle("expand",visible)):
+      "hide"===e.data.action&&(visible=!1,wrapDiv.classList.toggle("expand",visible))
+    )
+  }));
 
-  <script>
-    !function(window){
-      const host = "https://labs.heygen.com";
-      const url = host + "/guest/streaming-embed?";
-      const clientWidth = document.body.clientWidth;
-
-      const wrapDiv = document.createElement("div");
-      wrapDiv.id = "heygen-streaming-embed";
-
-      const container = document.createElement("div");
-      container.id = "heygen-streaming-container";
-
-      const stylesheet = document.createElement("style");
-      stylesheet.innerHTML = `
-        #heygen-streaming-embed {
-          z-index: 9999;
-          position: fixed;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 200px;
-          height: 200px;
-          border-radius: 50%;
-          border: 2px solid #fff;
-          box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
-          transition: all linear 0.1s;
-          overflow: hidden;
-
-          opacity: 0;
-          visibility: hidden;
-        }
-        #heygen-streaming-embed.show {
-          opacity: 1;
-          visibility: visible;
-        }
-        #heygen-streaming-embed.expand {
-          ${clientWidth < 540
-            ? "height: 266px; width: 96%; top: 50%; left: 50%; transform: translate(-50%, -50%);"
-            : "height: 366px; width: calc(366px * 16 / 9); top: 50%; left: 50%; transform: translate(-50%, -50%);"}
-          border: 0;
-          border-radius: 8px;
-        }
-        #heygen-streaming-container {
-          width: 100%;
-          height: 100%;
-        }
-        #heygen-streaming-container iframe {
-          width: 100%;
-          height: 100%;
-          border: 0;
-        }
-      `;
-
-      const iframe = document.createElement("iframe");
-      iframe.allowFullscreen = false;
-      iframe.title = "Streaming Embed";
-      iframe.role = "dialog";
-      iframe.allow = "microphone";
-      iframe.src = url;
-
-      let visible = false, initial = false;
-
-      window.addEventListener("message", (e) => {
-        if (e.origin === host && e.data && e.data.type === "streaming-embed") {
-          if (e.data.action === "init") {
-            initial = true;
-            wrapDiv.classList.toggle("show", initial);
-          } else if (e.data.action === "show") {
-            visible = true;
-            wrapDiv.classList.toggle("expand", visible);
-          } else if (e.data.action === "hide") {
-            visible = false;
-            wrapDiv.classList.toggle("expand", visible);
-          }
-        }
-      });
-
-      container.appendChild(iframe);
-      wrapDiv.appendChild(stylesheet);
-      wrapDiv.appendChild(container);
-      document.body.appendChild(wrapDiv);
-    }(globalThis);
-  </script>
-</body>
-</html>
+  container.appendChild(iframe),
+  wrapDiv.appendChild(stylesheet),
+  wrapDiv.appendChild(container),
+  document.body.appendChild(wrapDiv)
+}(globalThis);
+</script>

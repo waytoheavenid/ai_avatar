@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{PAGE_TITLE}}</title>
+  <title>AI Avatar Demo – Jogja Gallery 25–30 Agustus 2025</title>
   <meta name="color-scheme" content="dark">
 
   <style>
@@ -52,17 +52,14 @@
   </style>
 </head>
 <body>
-  <div id="hint">{{HINT_TEXT}}</div>
+  <div id="hint">Double-click untuk fullscreen • Tekan <kbd>F</kbd> untuk toggle • <kbd>Esc</kbd> keluar</div>
 
   <script>
     !function(window){
-      // === CONFIGURATION ===
-      const host = "{{HEYGEN_HOST}}";   // e.g. https://labs.heygen.com
-      const shareToken = "{{SHARE_TOKEN}}"; // put encoded share key here
-      const url = host + "/guest/streaming-embed?" + shareToken;
-      // =====================
-
+      const host = "https://labs.heygen.com";
+      const url = host + "/guest/streaming-embed?";
       const clientWidth = document.body.clientWidth;
+
       const wrapDiv = document.createElement("div");
       wrapDiv.id = "heygen-streaming-embed";
 
@@ -74,8 +71,9 @@
         #heygen-streaming-embed {
           z-index: 9999;
           position: fixed;
-          left: 40px;
-          bottom: 40px;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
           width: 200px;
           height: 200px;
           border-radius: 50%;
@@ -93,8 +91,8 @@
         }
         #heygen-streaming-embed.expand {
           ${clientWidth < 540
-            ? "height: 266px; width: 96%; left: 50%; transform: translateX(-50%);"
-            : "height: 366px; width: calc(366px * 16 / 9);"}
+            ? "height: 266px; width: 96%; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+            : "height: 366px; width: calc(366px * 16 / 9); top: 50%; left: 50%; transform: translate(-50%, -50%);"}
           border: 0;
           border-radius: 8px;
         }
@@ -119,7 +117,7 @@
       let visible = false, initial = false;
 
       window.addEventListener("message", (e) => {
-        if (e.origin === host && e.data && e.data.type && e.data.type === "streaming-embed") {
+        if (e.origin === host && e.data && e.data.type === "streaming-embed") {
           if (e.data.action === "init") {
             initial = true;
             wrapDiv.classList.toggle("show", initial);
